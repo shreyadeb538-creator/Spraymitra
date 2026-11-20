@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SprayMitra – Smart Spray Monitoring</title>
+<style>
+:root{--bg:#F1F4EC;--card:#fff;--ink:#14231A;--mute:#5B6B61;--line:#D8DFD1;--g:#1F5E3A;--g2:#2F8F57;--amb:#D9971A;--red:#C4412B;--blu:#2C6E9B;--un:#D3D9CC;--soft:#E6EDE0;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0F1913;--card:#17251C;--ink:#E7EEE5;--mute:#9AAB9F;--line:#2A3B30;--g:#58B97D;--g2:#58B97D;--un:#2B3A30;--soft:#1E3024;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0F1913;--card:#17251C;--ink:#E7EEE5;--mute:#9AAB9F;--line:#2A3B30;--g:#58B97D;--g2:#58B97D;--un:#2B3A30;--soft:#1E3024;color-scheme:dark}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--line);background:var(--card)}
+.brand{display:flex;gap:10px;align-items:center;font-weight:700;font-size:18px}.brand small{display:block;font-weight:400;font-size:12px;color:var(--mute)}
+.logo{width:34px;height:34px;border-radius:9px;background:var(--g);display:grid;place-items:center}
+.ctl{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:7px 12px}
+button:hover{border-color:var(--g)}button:focus-visible,[role=tab]:focus-visible{outline:2px solid var(--blu);outline-offset:2px}
+button.pri{background:var(--g);color:#fff;border-color:var(--g)}button.on{background:var(--soft);border-color:var(--g)}
+nav{display:flex;gap:4px;padding:10px 20px 0;overflow-x:auto;border-bottom:1px solid var(--line);background:var(--card)}
+nav [role=tab]{border:0;border-bottom:3px solid transparent;border-radius:0;background:none;padding:10px 14px;color:var(--mute);white-space:nowrap}
+nav [aria-selected=true]{color:var(--ink);border-color:var(--g);font-weight:600}
+main{padding:18px 20px;max-width:1280px;margin:auto}
+.grid{display:grid;gap:16px;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
+h2{font-size:16px;margin:0 0 10px}h3{font-size:14px;margin:0 0 6px}.mute{color:var(--mute);font-size:13px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}
+.kpi b{display:block;font-size:26px;line-height:1.1}.kpi span{font-size:12px;color:var(--mute)}
+.wk{display:grid;grid-template-columns:auto 1fr auto;gap:4px 10px;align-items:center;padding:10px;border:1px solid var(--line);border-radius:10px;margin-bottom:8px;cursor:pointer;background:var(--card);width:100%;text-align:left}
+.wk.sel{border-color:var(--g);background:var(--soft)}.dot{width:12px;height:12px;border-radius:50%}
+.chip{font-size:11px;padding:2px 7px;border-radius:99px;border:1px solid var(--line);color:var(--mute);margin-right:4px;display:inline-block}
+.chip.bad{color:var(--red);border-color:var(--red)}.chip.ok{color:var(--g);border-color:var(--g)}
+.al{display:flex;gap:10px;justify-content:space-between;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--line)}.al:last-child{border:0}
+.al.crit{border-left:4px solid var(--red);padding-left:10px}.al.warn{border-left:4px solid var(--amb);padding-left:10px}.al.done{opacity:.5}
+.scroll{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:560px}th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);font-size:14px}th{color:var(--mute);font-weight:500;font-size:12px}
+.bar{height:8px;border-radius:5px;background:var(--un);overflow:hidden;min-width:80px}.bar i{display:block;height:100%;background:var(--g2)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--mute);margin-top:8px}.legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.hide{display:none}svg text{fill:var(--ink);font-family:inherit}
+.fault{display:flex;gap:6px;flex-wrap:wrap}
+dialog{border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);max-width:560px;width:92%}
+#toast{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 14px;border-radius:10px;max-width:320px;opacity:0;transition:opacity .2s;pointer-events:none}#toast.show{opacity:1}
+.gauges{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+</style></head><body>
+<header>
+ <div class="brand"><div class="logo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M5 19c0-8 5-14 14-14 0 9-6 14-14 14zM5 19l7-7"/></svg></div><div>SprayMitra<small>Spray quality monitor · Section C-14, Sample Estate (demo data)</small></div></div>
+ <div class="ctl"><button id="play" class="pri">Pause</button>
+ <span class="mute">Speed</span><button data-sp="4">4×</button><button data-sp="8" class="on">8×</button><button data-sp="16">16×</button>
+ <button id="reset">Restart round</button><button id="theme" aria-label="Toggle theme">Theme</button></div>
+</header>
+<nav role="tablist"><button role="tab" data-v="live" aria-selected="true">Live field</button><button role="tab" data-v="board" aria-selected="false">Team &amp; rewards</button><button role="tab" data-v="audit" aria-selected="false">Coverage audit</button><button role="tab" data-v="kit" aria-selected="false">Sprayer kit</button></nav>
+<main>
+<section id="v-live">
+ <div class="kpis" id="kpis"></div>
+ <div class="grid"><div class="card"><h2>Coverage map · 12 rows</h2><div id="map"></div>
+  <div class="legend"><span><i style="background:var(--un)"></i>Not yet sprayed</span><span><i style="background:var(--g2)"></i>Good coverage</span><span><i style="background:var(--amb)"></i>Over-sprayed</span><span><i style="background:var(--red)"></i>Thin / skipped</span></div></div>
+  <div><div class="card" style="margin-bottom:16px"><h2>Sprayers</h2><div id="workers"></div></div>
+  <div class="card"><h2>Alerts <span class="mute" id="alcount"></span></h2><div id="alerts"></div></div></div></div>
+</section>
+<section id="v-board" class="hide"><div class="grid"><div class="card"><h2>Today's leaderboard</h2><div class="scroll"><table id="lb"></table></div><p class="mute">Score reflects pace, pressure and coverage quality. Reward rule shown is a sample: score ≥ 85 and no skipped rows.</p></div>
+ <div class="card"><h2>Badges</h2><div id="badges"></div></div></div></section>
+<section id="v-audit" class="hide"><div class="card"><div class="ctl" style="justify-content:space-between"><h2>Row-by-row audit</h2><button class="pri" id="cert">Generate audit summary</button></div><div class="scroll"><table id="at"></table></div>
+<p class="mute">Spray volume per hectare is computed from simulated flow × time over the row area. Real values need on-site calibration.</p></div></section>
+<section id="v-kit" class="hide"><div class="grid"><div class="card"><h2 id="kittitle">Retrofit kit</h2><div class="gauges" id="gauges"></div>
+ <div style="margin:14px 0 6px" class="mute">Simulate a field fault on this sprayer:</div><div class="fault" id="faults"></div></div>
+ <div class="card"><h2>What gets attached</h2><svg viewBox="0 0 320 250" width="100%" role="img" aria-label="Knapsack sprayer with sensor positions"><rect x="70" y="30" width="110" height="130" rx="18" fill="none" stroke="currentColor" stroke-width="2"/><path d="M180 100h40l30 80" fill="none" stroke="currentColor" stroke-width="3"/><rect x="244" y="176" width="40" height="8" rx="3" fill="currentColor"/>
+ <circle cx="125" cy="50" r="12" fill="#2C6E9B"/><circle cx="200" cy="100" r="9" fill="#D9971A"/><circle cx="225" cy="130" r="9" fill="#2F8F57"/><rect x="90" y="115" width="70" height="30" rx="6" fill="#1F5E3A"/>
+ <text x="40" y="205" font-size="11">Controller: ESP32 + GPS + BLE + battery</text><text x="40" y="224" font-size="11">Pressure sensor · Flow sensor · Nozzle-on switch</text><text x="40" y="242" font-size="11">Height cue: IMU in wearable (future)</text></svg>
+ <p class="mute">Blue: GPS/BLE puck. Amber: pressure sensor on the hose. Green: inline flow sensor. Everything on this screen is simulated in the prototype.</p></div></div></section>
+</main>
+<div id="toast" role="status" aria-live="polite"></div>
+<dialog id="dlg"><h2>Audit summary</h2><pre id="dtxt" style="white-space:pre-wrap;font:13px/1.5 monospace"></pre><button onclick="dlg.close()">Close</button></dialog>
+<script>
+const ROWS=12,N=25,ROWLEN=60,TARGET=.8;
+const WK=[["Bhaben Gogoi","#2C6E9B"],["Rupali Das","#9B59B6"],["Dilip Orang","#D9971A"],["Anita Munda","#C4412B"]];
+let S,sel=0,paused=false,speed=8,view="live",tickN=0;
+const $=id=>document.getElementById(id),rnd=(a,b)=>a+Math.random()*(b-a);
+function init(){S={rows:Array.from({length:ROWS},(_,i)=>({c:Array(N).fill(0),done:false,by:i%4,vol:0})),
+ w:WK.map((k,i)=>({n:k[0],col:k[1],rows:[i,i+4,i+8],ri:0,pos:0,last:-1,pace:TARGET,pr:3,fl:1.2,on:true,score:100,pts:0,f:{},done:false,bad:{},skips:0,dist:0,t:0,bat:92-i*3})),al:[]};
+ // alerts: {id,w,type,sev,msg,t,active,ack}
+}
+const CELL=c=>c<=0?"un":c<.8?"thin":c<=1.5?"ok":"over";
+function alert_(w,type,sev,msg){const a=S.al.find(a=>a.w===w&&a.type===type&&a.active);if(a)return;S.al.unshift({w,type,sev,msg,t:S.clock||0,active:true,ack:false});toast(S.w[w].n+": "+msg)}
+function clear_(w,type){S.al.forEach(a=>{if(a.w===w&&a.type===type)a.active=false})}
+S0=0;S={};init();S.clock=0;
+function step(){const dt=.1*speed;S.clock+=dt;tickN++;
+ S.w.forEach((w,wi)=>{if(w.done)return;const r=w.rows[w.ri],row=S.rows[r];
+  w.pace=w.f.rush?rnd(1.3,1.5):rnd(.74,.88);w.pr=w.f.lowp?rnd(1.4,1.9):rnd(2.8,3.2);w.on=!w.f.skip&&w.pr>=2.2;w.fl=w.on?w.pr*.4:0;w.bat-=.0008*speed;
+  const old=w.pos;w.pos=Math.min(1,w.pos+w.pace*dt/ROWLEN);w.dist+=w.pace*dt;w.t+=dt;
+  const a=Math.floor(old*N),b=Math.min(N-1,Math.floor(w.pos*N));
+  for(let c=Math.max(a,w.last+1);c<=b;c++){if(c>w.last){row.c[c]+=w.on?(w.pace>1.1?.5:1)*(w.f.double?2:1):0;w.last=c}}
+  row.vol+=w.fl*dt/60;
+  const chk=(k,cond,sev,msg,pen)=>{if(cond){w.bad[k]=(w.bad[k]||0)+1;if(w.bad[k]>=3)alert_(wi,k,sev,msg);w.score=Math.max(0,w.score-pen)}else{w.bad[k]=0;clear_(wi,k)}};
+  chk("lowp",w.pr<2.2,"crit","Low spray pressure at row "+(r+1)+" – check pump / nozzle",.04);
+  chk("rush",w.pace>1.1,"warn","Walking too fast – thin coverage",.03);
+  chk("over",!!w.f.double,"warn","Over-spraying – repeated passes on same cells",.03);
+  chk("off",!!w.f.skip,"crit","Nozzle off while walking row "+(r+1),.05);
+  if(w.pos>=1){row.done=true;const cov=row.c.filter(x=>x>=.8&&x<=1.5).length/N,thin=row.c.filter(x=>x<.8).length/N;
+   if(thin>.25){w.skips++;w.score=Math.max(0,w.score-8);alert_(wi,"row"+r,"crit","Row "+(r+1)+" under-covered ("+Math.round(cov*100)+"% good). Re-spray before plucking")}else w.pts+=cov>.9?20:10;
+   w.ri++;w.pos=0;w.last=-1;if(w.ri>=3){w.done=true;clear_(wi,"lowp");clear_(wi,"rush");clear_(wi,"over");clear_(wi,"off")}}});
+}
+function stats(){const rs=S.rows,tot=ROWS*N;let ok=0,ov=0,th=0,un=0;rs.forEach(r=>r.c.forEach(c=>{const k=CELL(c);k=="ok"?ok++:k=="over"?ov++:k=="thin"?th++:un++}));
+ const done=rs.filter(r=>r.done).length;return{ok,ov,th,un,done,sprayed:tot-un,tot}}
+function mapSVG(){const W=720,H=360,x0=40,gap=(W-60)/ROWS,y0=34,h=270,ch=h/N;let s=`<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Field coverage map">`;
+ S.rows.forEach((r,i)=>{const x=x0+i*gap;r.c.forEach((c,j)=>{const k=CELL(c);const col=k=="un"?"var(--un)":k=="ok"?"var(--g2)":k=="over"?"var(--amb)":"var(--red)";const dir=i%2?1:0;const y=y0+(dir?(N-1-j):j)*ch;s+=`<rect x="${x}" y="${y}" width="${gap-6}" height="${ch-1}" rx="2" fill="${col}"/>`});
+  s+=`<text x="${x+(gap-6)/2}" y="${y0+h+18}" font-size="11" text-anchor="middle">R${i+1}</text>`});
+ S.w.forEach((w,i)=>{if(w.done)return;const r=w.rows[w.ri],x=x0+r*gap+(gap-6)/2,dir=r%2?1:0,p=dir?1-w.pos:w.pos,y=y0+p*h;
+  s+=`<circle cx="${x}" cy="${y}" r="10" fill="${w.col}" stroke="#fff" stroke-width="2"/><text x="${x}" y="${y+3.5}" font-size="10" text-anchor="middle" style="fill:#fff;font-weight:700">${i+1}</text>`});
+ return s+`<text x="${x0}" y="16" font-size="11" style="fill:var(--mute)">Row direction alternates (serpentine). Numbered dots = live GPS positions (simulated).</text></svg>`}
+function render(){const st=stats(),avg=Math.round(S.w.reduce((a,w)=>a+w.score,0)/4),act=S.al.filter(a=>a.active&&!a.ack).length;
+ if(view=="live"){$("kpis").innerHTML=[[Math.round(st.sprayed/st.tot*100)+"%","Field area touched"],[st.done+" / "+ROWS,"Rows completed"],[Math.round(st.ok/Math.max(1,st.sprayed)*100)+"%","Of sprayed area is in spec"],[act,"Open alerts"],[avg,"Team quality score"]].map(k=>`<div class="card kpi"><b>${k[0]}</b><span>${k[1]}</span></div>`).join("");
+  $("map").innerHTML=mapSVG();
+  $("workers").innerHTML=S.w.map((w,i)=>`<button class="wk ${i==sel?"sel":""}" data-w="${i}"><span class="dot" style="background:${w.col}"></span><span><b>${w.n}</b><br><span class="mute">${w.done?"Round complete":"Row "+(w.rows[w.ri]+1)+" · "+w.pace.toFixed(2)+" m/s · "+w.pr.toFixed(1)+" bar"}</span></span><b>${Math.round(w.score)}</b><span></span><span>${Object.keys(w.f).filter(k=>w.f[k]).length?'<span class="chip bad">Fault injected</span>':'<span class="chip ok">In spec</span>'}${w.on?"":'<span class="chip bad">Nozzle off</span>'}</span><span></span></button>`).join("");
+  $("alcount").textContent=act?"· "+act+" open":"";
+  $("alerts").innerHTML=S.al.length?S.al.slice(0,7).map((a,i)=>`<div class="al ${a.ack||!a.active?"done":a.sev}"><div><b>${S.w[a.w].n}</b><br><span class="mute">${a.msg}</span></div>${a.ack?"":`<button data-ack="${S.al.indexOf(a)}">Acknowledge</button>`}</div>`).join(""):`<p class="mute">No alerts. Use the Sprayer kit tab to inject a fault and see how supervisors are notified.</p>`}
+ if(view=="board"){const o=[...S.w].sort((a,b)=>b.score+b.pts-(a.score+a.pts));$("lb").innerHTML=`<tr><th>#</th><th>Sprayer</th><th>Quality</th><th>Points</th><th>Skipped rows</th><th>Reward</th></tr>`+o.map((w,i)=>`<tr><td>${i+1}</td><td><span class="dot" style="background:${w.col};display:inline-block;margin-right:8px"></span>${w.n}</td><td>${Math.round(w.score)}</td><td>${w.pts}</td><td>${w.skips}</td><td>${w.score>=85&&!w.skips?'<span class="chip ok">Eligible</span>':'<span class="chip">Not yet</span>'}</td></tr>`).join("");
+  $("badges").innerHTML=S.w.map(w=>`<div style="margin-bottom:10px"><b>${w.n}</b><br>${w.score>=90?'<span class="chip ok">Steady hand</span>':''}${!w.skips&&w.ri>0?'<span class="chip ok">Zero skips</span>':''}${w.pts>=40?'<span class="chip ok">Full-row finisher</span>':''}${w.score<70?'<span class="chip bad">Needs coaching</span>':''}</div>`).join("")}
+ if(view=="audit"){$("at").innerHTML=`<tr><th>Row</th><th>Sprayer</th><th>In spec</th><th>Over</th><th>Thin / missed</th><th>Volume (L/ha, sim)</th><th>Status</th></tr>`+S.rows.map((r,i)=>{const n=k=>r.c.filter(c=>CELL(c)==k).length,ok=n("ok"),ov=n("over"),th=n("thin")+n("un");const ha=ROWLEN*1.2/10000;const stt=!r.done?(r.c.some(c=>c>0)?"In progress":"Pending"):th/N>.25?"Re-spray":"Verified";return`<tr><td>R${i+1}</td><td>${S.w[r.by].n}</td><td><div class="bar"><i style="width:${ok/N*100}%"></i></div></td><td>${Math.round(ov/N*100)}%</td><td>${Math.round(th/N*100)}%</td><td>${r.vol?Math.round(r.vol*.001*1000/ha/10)*10:"–"}</td><td><span class="chip ${stt=="Verified"?"ok":stt=="Re-spray"?"bad":""}">${stt}</span></td></tr>`}).join("")}
+ if(view=="kit"){const w=S.w[sel];$("kittitle").textContent="Retrofit kit · "+w.n;const g=(l,v,u,bad)=>`<div class="card" style="padding:12px"><span class="mute">${l}</span><b style="display:block;font-size:22px;color:${bad?"var(--red)":"var(--ink)"}">${v}<small style="font-size:12px"> ${u}</small></b></div>`;
+  $("gauges").innerHTML=g("Nozzle pressure",w.pr.toFixed(1),"bar",w.pr<2.2)+g("Flow rate",w.fl.toFixed(2),"L/min",!w.on)+g("Walking pace",w.pace.toFixed(2),"m/s",w.pace>1.1)+g("Spray time",Math.round(w.t/60*10)/10,"min")+g("Distance",Math.round(w.dist),"m")+g("Battery",Math.round(w.bat),"%")+g("GPS / BLE","Locked","sim");
+  $("faults").innerHTML=[["lowp","Low pressure"],["rush","Rushing"],["double","Over-spraying"],["skip","Nozzle off"]].map(f=>`<button data-f="${f[0]}" class="${w.f[f[0]]?"on":""}">${f[1]}</button>`).join("")}}
+function toast(m){const t=$("toast");t.textContent=m;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),2600)}
+document.addEventListener("click",e=>{const t=e.target.closest("button");if(!t)return;
+ if(t.dataset.v){view=t.dataset.v;document.querySelectorAll("[role=tab]").forEach(b=>b.setAttribute("aria-selected",b==t));["live","board","audit","kit"].forEach(v=>$("v-"+v).classList.toggle("hide",v!=view));render()}
+ if(t.dataset.sp){speed=+t.dataset.sp;document.querySelectorAll("[data-sp]").forEach(b=>b.classList.toggle("on",b==t))}
+ if(t.dataset.w!==undefined){sel=+t.dataset.w;render()}
+ if(t.dataset.ack!==undefined){S.al[+t.dataset.ack].ack=true;render()}
+ if(t.dataset.f){const w=S.w[sel];w.f[t.dataset.f]=!w.f[t.dataset.f];render();toast(w.f[t.dataset.f]?"Fault injected for "+w.n:"Fault cleared")}
+ if(t.id=="play"){paused=!paused;t.textContent=paused?"Resume":"Pause"}
+ if(t.id=="reset"){const c=S.clock;init();S.clock=0;render()}
+ if(t.id=="theme"){const r=document.documentElement,d=r.dataset.theme?r.dataset.theme=="dark":matchMedia("(prefers-color-scheme:dark)").matches;r.dataset.theme=d?"light":"dark"}
+ if(t.id=="cert"){const st=stats();$("dtxt").textContent=`SPRAY AUDIT SUMMARY (simulated demo data)\nSection: C-14 · Rows: ${ROWS}\nRows completed: ${st.done}/${ROWS}\nIn-spec cells: ${Math.round(st.ok/st.tot*100)}% · Over-sprayed: ${Math.round(st.ov/st.tot*100)}% · Thin/missed: ${Math.round((st.th+st.un)/st.tot*100)}%\nRows flagged for re-spray: ${S.rows.filter(r=>r.done&&r.c.filter(c=>c<.8).length/N>.25).length}\nSprayers: ${S.w.map(w=>w.n+" ("+Math.round(w.score)+")").join(", ")}\nStatus: ${st.done==ROWS&&!S.rows.some(r=>r.c.filter(c=>c<.8).length/N>.25)?"READY for plucking round":"NOT READY – review flagged rows"}`;dlg.showModal()}});
+setInterval(()=>{if(!paused){step();if(S.w.every(w=>w.done)&&!S.fin){S.fin=true;toast("Spray round complete – see Coverage audit")}render()}},100);
+render();
+</script></body></html>
